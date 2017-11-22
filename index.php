@@ -2,7 +2,8 @@
 /**
  * Google Search Console Archive
  *
- * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr) & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
+ * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr)
+ * & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
