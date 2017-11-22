@@ -40,8 +40,21 @@ $history = ((isset($_REQUEST['history'])) && (empty($_REQUEST['history']) === fa
 # Database Object
 $database = new Database($configuration);
 
+if (isset($configuration['authScript'])
+    && is_string($configuration['authScript'])
+    && trim($configuration['authScript']) != '') {
+    require($configuration['authScript']);
+}
+
 # Counting Keywords/Pages & Last Modify
-$last = date('Y-m-d', $database->last($query, $website, ($device == '*') ? 'desktop' : $device));
+$last = date(
+    'Y-m-d',
+    $database->last(
+        $query,
+        $website,
+        ($device == '*') ? 'desktop' : $device
+    )
+);
 
 # Page/Query Detail Mode
 switch ($mode) {
