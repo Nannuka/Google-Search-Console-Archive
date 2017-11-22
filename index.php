@@ -146,7 +146,7 @@ switch ($mode) {
                 'to' => date('Y-m-d', strtotime($interval['base']['from'] . (($compare == 'year') ? ' - 1 year' : ' - 1 day'))));
             $aggregate = false;
         }
-
+        $compareOriginal = $compare;
         # Always Compare Mode
         $compare = array();
 
