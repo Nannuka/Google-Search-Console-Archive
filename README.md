@@ -25,7 +25,7 @@ This tool is in Beta, but we use it a lot in a daily basis and are comfortable e
 
 ### Creating a Google Service Account ###
 
-Follow the instructions to Create a Service Account  
+Follow the instructions to Create a Service Account
 (See https://developers.google.com/api-client-library/php/auth/service-accounts#creatinganaccount)
 
 - Generate & download a p12 Key for your account
@@ -55,7 +55,7 @@ Edit *base.php* and fill/replace the following :
             'url' => 'http://blog.elijaa.org',
             'table' => 'blog.elijaa.org')),
     ```
-    
+
 - Database configuration (Hostname, password, port, database name)
 
 
@@ -66,7 +66,7 @@ You will need a MySQL database for Search Console Archive AND a user granted for
 - Open *docs/sql/website.sql*, replace the {%website_table%} token with your website's table name
 (The ['table'] key used in the website array in the configuration file)
 - Run the SQL code to in your MySQL Database to create base tables for every website you want to add
-- Open *docs/sql/filters.sql*, replace the {%website%} token with your website name 
+- Open *docs/sql/filters.sql*, replace the {%website%} token with your website name
 - Run the SQL code to in your MySQL Database to create base filters
 
 ### Data Import configuration ###
@@ -112,9 +112,11 @@ Future version will add a nice filter handling
 ## Google API PHP Client ##
 Search Console Archive use [Google APIs Client Library for PHP](https://github.com/google/google-api-php-client) to query Google API
 
-The script is provided in this repository but the preferred method is via [composer](https://getcomposer.org)
+It should be installed using [composer](https://getcomposer.org). Use the command:
+
+    composer update
 
 Be sure to keep Google API PHP Client at version 1.*
 
 ##  What do I do if something isn't working ? ##
-If there is a specific bug with this tool, please [file a issue](https://github.com/OuestFrance-Multimedia/Search-Console-Archive/issues) in the Github issues tracker, including an example of the failing code and any specific errors retrieved.
+If there is a specific bug with this tool, please [file a issue](hhttps://github.com/Nannuka/Google-Search-Console-Archive/issues) in the Github issues tracker, including an example of the failing code and any specific errors retrieved.
