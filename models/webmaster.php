@@ -2,7 +2,8 @@
 /**
  * Google Search Console Archive
  *
- * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr) & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
+ * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr)
+ * & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +31,8 @@ class SearchConsole_Query
         $this->_service = $service;
 
         # Request
-        $this->_request = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+        $this->_request =
+            new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
 
         # Default Values
         $this->_request->setSearchType('web');
@@ -50,7 +52,13 @@ class SearchConsole_Query
             'device');
 
         # Executing Request
-        return $this->website($website['url'])->device($device)->from($date['from'])->to($date['to'])->group($group)->limit(5000)->execute();
+        return $this->website($website['url'])
+            ->device($device)
+            ->from($date['from'])
+            ->to($date['to'])
+            ->group($group)
+            ->limit(5000)
+            ->execute();
     }
 
     public function queries($website, $device, $date)
@@ -65,7 +73,13 @@ class SearchConsole_Query
             'device');
 
         # Executing Request
-        return $this->website($website['url'])->device($device)->from($date['from'])->to($date['to'])->group($group)->limit(5000)->execute();
+        return $this->website($website['url'])
+            ->device($device)
+            ->from($date['from'])
+            ->to($date['to'])
+            ->group($group)
+            ->limit(5000)
+            ->execute();
     }
 
     # Shortlinks
@@ -82,7 +96,14 @@ class SearchConsole_Query
             'device');
 
         # Executing Request
-        $api = $this->website($website['url'])->device($device)->page($website['page'])->from($date['from'])->to($date['to'])->group($group)->limit(5000)->execute();
+        $api = $this->website($website['url'])
+            ->device($device)
+            ->page($website['page'])
+            ->from($date['from'])
+            ->to($date['to'])
+            ->group($group)
+            ->limit(5000)
+            ->execute();
 
         # Aggregation
         if ($date['from'] != $date['to']) {
@@ -96,8 +117,17 @@ class SearchConsole_Query
                 } else {
                     $data[$row->keys[1]]['clicks'] += $row['clicks'];
                     $data[$row->keys[1]]['impressions'] += $row['impressions'];
-                    $data[$row->keys[1]]['position'] = ($data[$row->keys[1]]['position'] * $data[$row->keys[1]]['impressions'] + $row['position'] * $row['impressions']) / ($data[$row->keys[1]]['impressions'] + $row['impressions']);
-                    $data[$row->keys[1]]['ctr'] = $row['clicks'] / $row['impressions'];
+                    $data[$row->keys[1]]['position'] = (
+                        $data[$row->keys[1]]['position']
+                        * $data[$row->keys[1]]['impressions']
+                        + $row['position']
+                        * $row['impressions']
+                        ) / (
+                            $data[$row->keys[1]]['impressions']
+                            + $row['impressions']
+                        );
+                    $data[$row->keys[1]]['ctr']
+                        = $row['clicks'] / $row['impressions'];
                 }
             }
         } else {
@@ -118,18 +148,23 @@ class SearchConsole_Query
         $filters = new Google_Service_Webmasters_ApiDimensionFilterGroup();
         $filters->setFilters($this->_filters);
 
-        $this->_request->setDimensionFilterGroups(array(
-            $filters));
+        $this->_request->setDimensionFilterGroups(
+            array($filters)
+        );
 
         try {
             # Executing Query
-            return $this->_service->searchanalytics->query($this->_website, $this->_request);
-        } catch (Exception $e) {
+            return $this->_service->searchanalytics->query(
+                $this->_website, $this->_request
+            );
+        } catch (Exception $exception) {
             # Waiting before Requesting Again
             sleep(20);
 
             # Executing Query
-            return $this->_service->searchanalytics->query($this->_website, $this->_request);
+            return $this->_service->searchanalytics->query(
+                $this->_website, $this->_request
+            );
         }
     }
 

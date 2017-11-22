@@ -2,7 +2,8 @@
 /**
  * Google Search Console Archive
  *
- * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr) & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
+ * Copyright (C) 2016 : Cyrille Mahieux (c.mahieux@of2m.fr)
+ * & Vincent Robert (v.robert@of2m.fr) @ Ouest France Multimedia
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,12 +46,25 @@ class Database
         if (isset(self::$_mysql) === false) {
             # Creating New Connection
             self::$_mysql = mysqli_init();
-            self::$_mysql->real_connect(self::$_database['host'], self::$_database['username'], self::$_database['password'], self::$_database['database'], self::$_database['port'], null, MYSQLI_CLIENT_COMPRESS);
+            self::$_mysql->real_connect(
+                self::$_database['host'],
+                self::$_database['username'],
+                self::$_database['password'],
+                self::$_database['database'],
+                self::$_database['port'],
+                null,
+                MYSQLI_CLIENT_COMPRESS
+            );
             self::$_mysql->set_charset('utf8');
 
             # Checking Connection State
             if (self::$_mysql->connect_error) {
-                throw new Exception('Connection Error [' . self::$_mysql->connect_errno . '] ' . self::$_mysql->connect_error);
+                throw new Exception(
+                    'Connection Error ['
+                    . self::$_mysql->connect_errno
+                    . '] '
+                    . self::$_mysql->connect_error
+                );
             }
         }
 
@@ -61,7 +75,10 @@ class Database
     {
         foreach ($data as $query) {
             if (self::_handle()->query($query) !== true) {
-                echo PHP_EOL . 'Error : ' . self::_handle()->error . ', Query : ' . $query;
+                echo PHP_EOL . 'Error : '
+                    . self::_handle()->error
+                    . ', Query : '
+                    . $query;
             }
             usleep(5);
         }
@@ -72,17 +89,31 @@ class Database
      */
     public function average($date, $website, $device)
     {
-        $query = 'SELECT AVG(position) AS average
-                  FROM `' . str_replace(array(
-            '{%device%}',
-            '{%website%}'), array(
-            self::_handle()->real_escape_string($device),
-            self::_handle()->real_escape_string(self::website_table_name($website))), self::$_configuration['database']['table']['queries']) . '`
-                  WHERE date = \'' . self::_handle()->real_escape_string($date) . '\';';
+        $query = 'SELECT AVG(position) AS average FROM `'
+            . str_replace(
+                array(
+                    '{%device%}',
+                    '{%website%}'
+                ), array(
+                    self::_handle()->real_escape_string($device),
+                    self::_handle()->real_escape_string(
+                        self::website_table_name($website)
+                    )
+                ),
+                self::$_configuration['database']['table']['queries']
+            )
+            . '` WHERE date = \''
+            . self::_handle()->real_escape_string($date)
+            . '\';';
 
         # Executing Query
         if (($resource = self::_handle()->query($query)) === false) {
-            throw new Exception('Query Error [' . self::$_mysql->sqlstate . '] : ' . $query);
+            throw new Exception(
+                'Query Error ['
+                . self::$_mysql->sqlstate
+                . '] : '
+                . $query
+            );
         } elseif (is_null($data = $resource->fetch_array()) === true) {
             return false;
         }
@@ -94,16 +125,33 @@ class Database
      */
     public function ratio($date, $website, $device)
     {
-        $query = 'SELECT (ROUND((SUM(clicks)) / (SUM(impressions)) * 100)) AS ctr
-                  FROM `' . str_replace(array('{%device%}', '{%website%}'),
-                              array(self::_handle()->real_escape_string($device),
-                                  self::_handle()->real_escape_string(self::website_table_name($website))), self::$_configuration['database']['table']['queries']) . '`
-                  WHERE query NOT LIKE \'ouestfrance\' AND query NOT LIKE \'ouest france\'
-                        AND date = \'' . self::_handle()->real_escape_string($date) . '\';';
+        $query = 'SELECT (ROUND((SUM(clicks)) / (SUM(impressions)) * 100)) '
+            . ' AS ctr '
+            . ' FROM `'
+            . str_replace(
+                array('{%device%}', '{%website%}'),
+                array(
+                    self::_handle()->real_escape_string($device),
+                    self::_handle()->real_escape_string(
+                        self::website_table_name($website)
+                    )
+                ),
+                self::$_configuration['database']['table']['queries']
+            )
+            . '` WHERE query NOT LIKE \'ouestfrance\' '
+            . ' AND query NOT LIKE \'ouest france\' '
+            . ' AND date = \''
+            . self::_handle()->real_escape_string($date)
+            . '\';';
 
         # Executing Query
         if (($resource = self::_handle()->query($query)) === false) {
-            throw new Exception('Query Error [' . self::$_mysql->sqlstate . '] : ' . $query);
+            throw new Exception(
+                'Query Error ['
+                . self::$_mysql->sqlstate
+                . '] : '
+                . $query
+            );
         } elseif (is_null($data = $resource->fetch_array()) === true) {
             return false;
         }
@@ -118,27 +166,47 @@ class Database
         # MAX(date) Query by Table
         switch ($query) {
             case 'query' :
-                $query = 'SELECT MAX(date) AS date
-                          FROM `' . str_replace(array(
-                    '{%device%}',
-                    '{%website%}'), array(
-                    self::_handle()->real_escape_string($device),
-                    self::_handle()->real_escape_string(self::website_table_name($website))), self::$_configuration['database']['table']['queries']) . '`';
+                $query = 'SELECT MAX(date) AS date '
+                . ' FROM `'
+                . str_replace(
+                    array(
+                        '{%device%}',
+                        '{%website%}'
+                    ), array(
+                        self::_handle()->real_escape_string($device),
+                        self::_handle()->real_escape_string(
+                            self::website_table_name($website)
+                        )
+                    ),
+                    self::$_configuration['database']['table']['queries']
+                )
+                . '`';
                 break;
             case 'page' :
             case 'keywords' :
-                $query = 'SELECT MAX(date) AS date
-                          FROM `' . str_replace(array(
-                    '{%device%}',
-                    '{%website%}'), array(
-                    self::_handle()->real_escape_string($device),
-                    self::_handle()->real_escape_string(self::website_table_name($website))), self::$_configuration['database']['table']['pages']) . '`';
+                $query = 'SELECT MAX(date) AS date '
+                    . 'FROM `'
+                    . str_replace(
+                        array(
+                            '{%device%}',
+                            '{%website%}'
+                        ), array(
+                            self::_handle()->real_escape_string($device),
+                            self::_handle()->real_escape_string(
+                                self::website_table_name($website)
+                            )
+                        ),
+                        self::$_configuration['database']['table']['pages']
+                    )
+                    . '`';
                 break;
         }
 
         # Executing Query
         if (($resource = self::_handle()->query($query)) === false) {
-            throw new Exception('Query Error [' . self::$_mysql->sqlstate . '] : ' . $query);
+            throw new Exception(
+                'Query Error [' . self::$_mysql->sqlstate . '] : ' . $query
+            );
         } elseif (is_null($data = $resource->fetch_array()) === true) {
             return false;
         }
