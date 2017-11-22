@@ -5,3 +5,4 @@
 /configuration/*.p12
 /nbproject/project.xml
 /nbproject/project.properties
+/composer.lock
