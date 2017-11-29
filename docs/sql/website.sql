@@ -120,3 +120,29 @@ CREATE TABLE `everything_{%website_table%}` (
   KEY `DATE` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+
+CREATE VIEW `export_{%website_table%}` AS SELECT
+    `everything_{%website_table%}`.`date` AS `date`,
+    `everything_{%website_table%}`.`query` AS `query`,
+    `everything_{%website_table%}`.`page` AS `page`,
+    `everything_{%website_table%}`.`country` AS `country`,
+    `everything_{%website_table%}`.`device` AS `device`,
+    `everything_{%website_table%}`.`clicks` AS `clicks`,
+    `everything_{%website_table%}`.`impressions` AS `impressions`,
+    (
+        `everything_{%website_table%}`.`clicks` / `everything_{%website_table%}`.`impressions`
+    ) AS `ctr`,
+    `everything_{%website_table%}`.`position` AS `position`
+FROM
+    `everything_{%website_table%}`
+WHERE
+    1
+ORDER BY
+    `everything_{%website_table%}`.`date`
+DESC
+    ,
+    `everything_{%website_table%}`.`query`,
+    `everything_{%website_table%}`.`page`,
+    `everything_{%website_table%}`.`country`,
+    `everything_{%website_table%}`.`device`;
