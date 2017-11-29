@@ -82,6 +82,8 @@ $configuration = array(
         'port' => 3306,
         'table' => array(
             'pages' => 'pages_{%device%}_{%website%}',
+            'countries' => 'countries_{%device%}_{%website%}',
+            'everything' => 'everything_{%website%}',
             'queries' => 'queries_{%device%}_{%website%}'
         )
     )

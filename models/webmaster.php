@@ -49,7 +49,55 @@ class SearchConsole_Query
         $group = array(
             'page',
             'date',
-            'device');
+            'device'
+        );
+
+        # Executing Request
+        return $this->website($website['url'])
+            ->device($device)
+            ->from($date['from'])
+            ->to($date['to'])
+            ->group($group)
+            ->limit(5000)
+            ->execute();
+    }
+
+
+    public function everything($website, $device, $date)
+    {
+        # Making some time before request
+        usleep(15000);
+
+        # Group Clause
+        $group = array(
+            'page',
+            'query',
+            'country',
+            'date',
+            'device'
+        );
+
+        # Executing Request
+        return $this->website($website['url'])
+            ->device($device)
+            ->from($date['from'])
+            ->to($date['to'])
+            ->group($group)
+            ->limit(5000)
+            ->execute();
+    }
+
+    public function countries($website, $device, $date)
+    {
+        # Making some time before request
+        usleep(15000);
+
+        # Group Clause
+        $group = array(
+            'country',
+            'date',
+            'device'
+        );
 
         # Executing Request
         return $this->website($website['url'])
@@ -70,7 +118,8 @@ class SearchConsole_Query
         $group = array(
             'query',
             'date',
-            'device');
+            'device'
+        );
 
         # Executing Request
         return $this->website($website['url'])
@@ -93,7 +142,8 @@ class SearchConsole_Query
             'page',
             'query',
             'date',
-            'device');
+            'device'
+        );
 
         # Executing Request
         $api = $this->website($website['url'])

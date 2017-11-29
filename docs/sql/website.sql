@@ -68,3 +68,55 @@ CREATE TABLE `queries_tablet_{%website_table%}` (
   UNIQUE KEY `UNIQUE` (`query`,`date`),
   KEY `DATE` (`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+CREATE TABLE `countries_desktop_{%website_table%}` (
+  `country` varchar(3) NOT NULL,
+  `impressions` int(11) NOT NULL,
+  `clicks` int(11) NOT NULL,
+  `position` decimal(5,1) NOT NULL,
+  `date` date NOT NULL,
+  UNIQUE KEY `UNIQUE` (`country`,`date`),
+  KEY `DATE` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `countries_mobile_{%website_table%}` (
+  `country` varchar(3) NOT NULL,
+  `impressions` int(11) NOT NULL,
+  `clicks` int(11) NOT NULL,
+  `position` decimal(5,1) NOT NULL,
+  `date` date NOT NULL,
+  UNIQUE KEY `UNIQUE` (`country`,`date`),
+  KEY `DATE` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `countries_tablet_{%website_table%}` (
+  `country` varchar(3) NOT NULL,
+  `impressions` int(11) NOT NULL,
+  `clicks` int(11) NOT NULL,
+  `position` decimal(5,1) NOT NULL,
+  `date` date NOT NULL,
+  UNIQUE KEY `UNIQUE` (`country`,`date`),
+  KEY `DATE` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+
+
+CREATE TABLE `everything_{%website_table%}` (
+  `query` varchar(250) NOT NULL,
+  `page` varchar(250) NOT NULL,
+  `country` varchar(3) NOT NULL,
+  `device` varchar(7) NOT NULL,
+  `impressions` int(11) NOT NULL,
+  `clicks` int(11) NOT NULL,
+  `position` decimal(5,1) NOT NULL,
+  `date` date NOT NULL,
+  UNIQUE KEY `UNIQUE` (`query`, `page`, `country`, `device`, `date`),
+  KEY `DATE` (`date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

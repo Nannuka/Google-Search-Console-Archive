@@ -36,7 +36,11 @@ $date['from'] = (isset($_GET['start'])) ? $_GET['start'] : date('Y-m-d', (isset(
 $date['to'] = (isset($_GET['end'])) ? $_GET['end'] : date('Y-m-d', strtotime('-1 days'));
 
 # Making Credential for API
-$credentials = new Google_Auth_AssertionCredentials($configuration['api']['login'], $configuration['api']['scope'], $configuration['api']['key']);
+$credentials = new Google_Auth_AssertionCredentials(
+    $configuration['api']['login'],
+    $configuration['api']['scope'],
+    $configuration['api']['key']
+);
 
 # Creating Client & Applying Credentials
 $client = new Google_Client();
@@ -58,7 +62,12 @@ $service = new Google_Service_Webmasters($client);
 $database = new Database($configuration);
 
 # Trace
-echo PHP_EOL . 'Calling Search Console API ';
+echo PHP_EOL
+    . 'Calling Search Console API for dates: '
+    . $date['from']
+    . ' to '
+    . $date['to'];
+
 
 # Iterating each Website
 foreach ($configuration['websites'] as $website) {
@@ -69,53 +78,203 @@ foreach ($configuration['websites'] as $website) {
             # WebmasterTools Request Object
             $query = new SearchConsole_Query($service);
 
-            # Top Page
-            if (($data = $query->pages($website, $device, array('from' => $time, 'to' => $time))) != false) {
+
+
+
+            # Top Countries
+            if (($data = $query->countries(
+                $website, $device, array('from' => $time, 'to' => $time)
+            )) != false) {
                 # Using Results
                 foreach ($data->getRows() as $data) {
                     # SQL Statistics Query
-                    $sql[] = 'INSERT INTO `' . str_replace(array('{%device%}', '{%website%}'), array($device, $website['table']), $configuration['database']['table']['pages']) . '`
-                              (`page`,`impressions`,`clicks`,`position`,`date`)
-                              VALUES (\'' . substr($database->_handle()->real_escape_string(str_replace($website['url'], '', $data->keys[0])), 0, 250) . '\',
-                                      ' . (integer)$data->impressions . ',
-                                      ' . (integer)$data->clicks . ',
-                                      ' . (float)round($data->position, 1) . ',
-                                      \'' . $data->keys[1] . '\')
-                              ON DUPLICATE KEY UPDATE
-                                      impressions = ' . (integer)$data->impressions . ',
-                                      clicks = ' . (integer)$data->clicks . ',
-                                      position = ' . (float)round($data->position, 1) . ';';
+                    $sql[] = 'INSERT INTO `'
+                        . str_replace(
+                            array('{%device%}', '{%website%}'),
+                            array($device, $website['table']),
+                            $configuration['database']['table']['countries']
+                        )
+                        . '` '
+                        . '(`country`, `impressions`, '
+                        . '`clicks`, `position`, `date`) '
+                        . 'VALUES (\''
+                        . $data->keys[0]
+                        . '\', '
+                        . (integer)$data->impressions . ', '
+                        . (integer)$data->clicks . ', '
+                        . (float)round($data->position, 1) . ', \''
+                        . $data->keys[1] . '\') '
+                        . 'ON DUPLICATE KEY UPDATE impressions = '
+                        . (integer)$data->impressions
+                        . ', clicks = '
+                        . (integer)$data->clicks
+                        . ', position = '
+                        . (float)round($data->position, 1)
+                        . ';';
                 }
+
 
                 # Trace
                 echo '.';
             } else {
                 # Trace
-                echo PHP_EOL . 'Error with SearchConsole_Query::pages(' . $website['url'] . ',' . $device . ',' . $time . ')';
+                echo PHP_EOL
+                    . 'Error with SearchConsole_Query::countries('
+                    . ''
+                    . $website['url']
+                    . ','
+                    . $device
+                    . ','
+                    . $time
+                    . ')';
             }
 
-            # Top Query
-            if (($data = $query->queries($website, $device, array('from' => $time, 'to' => $time))) != false) {
+
+
+
+            # Everything
+            if (($data = $query->everything(
+                $website, $device, array('from' => $time, 'to' => $time)
+            )) != false) {
+                # Using Results
                 foreach ($data->getRows() as $data) {
                     # SQL Statistics Query
-                    $sql[] = 'INSERT INTO `' . str_replace(array('{%device%}', '{%website%}'), array($device, $website['table']), $configuration['database']['table']['queries']) . '`
-                              (`query`,`impressions`,`clicks`,`position`,`date`)
-                              VALUES (\'' . $database->_handle()->real_escape_string($data->keys[0]) . '\',
-                                      ' . (integer)$data->impressions . ',
-                                      ' . (integer)$data->clicks . ',
-                                      \'' . (float)round($data->position, 1) . '\',
-                                      \'' . $data->keys[1] . '\')
-                              ON DUPLICATE KEY UPDATE
-                                     impressions = ' . (integer)$data->impressions . ',
-                                     clicks = ' . (integer)$data->clicks . ',
-                                     position = ' . (float)round($data->position, 1) . ';';
+                    $sql[] = 'INSERT INTO `'
+                        . str_replace('{%website%}', $website['table'],
+                            $configuration['database']['table']['everything']
+                        )
+                        . '` (`query`, `page`, `country`, `device`, '
+                        . ' `impressions`,`clicks`,`position`,`date`) '
+                        . 'VALUES (\''
+                        . $database->_handle()->real_escape_string(
+                            $data->keys[1]
+                        )
+                        . "', '"
+                        . substr(
+                            $database->_handle()->real_escape_string(
+                                str_replace($website['url'], '', $data->keys[0])
+                            ), 0, 250
+                        )
+                        . "', '"
+                        . $data->keys[2]
+                        . "', '"
+                        . $data->keys[4]
+                        . '\', '
+                        . (integer)$data->impressions . ', '
+                        . (integer)$data->clicks . ', '
+                        . (float)round($data->position, 1) . ', \''
+                        . $data->keys[3] . '\') '
+                        . 'ON DUPLICATE KEY UPDATE impressions = '
+                        . (integer)$data->impressions
+                        . ', clicks = '
+                        . (integer)$data->clicks
+                        . ', position = '
+                        . (float)round($data->position, 1)
+                        . ';';
                 }
 
                 # Trace
                 echo '.';
             } else {
                 # Trace
-                echo PHP_EOL . 'Error with SearchConsole_Query::queries(' . $website['url'] . ',' . $device . ',' . $time . ')';
+                echo PHP_EOL . 'Error with SearchConsole_Query::everything('
+                    . $website['url']
+                    . ','
+                    . $device
+                    . ','
+                    . $time
+                    . ')';
+            }
+
+            # Top Page
+            if (($data = $query->pages(
+                $website, $device, array('from' => $time, 'to' => $time)
+            )) != false) {
+                # Using Results
+                foreach ($data->getRows() as $data) {
+                    # SQL Statistics Query
+                    $sql[] = 'INSERT INTO `'
+                        . str_replace(
+                            array('{%device%}', '{%website%}'),
+                            array($device, $website['table']),
+                            $configuration['database']['table']['pages']
+                        )
+                        . '` (`page`,`impressions`,`clicks`,`position`,`date`) '
+                        . 'VALUES (\''
+                        . substr(
+                            $database->_handle()->real_escape_string(
+                                str_replace($website['url'], '', $data->keys[0])
+                            ), 0, 250
+                        )
+                        . '\', '
+                        . (integer)$data->impressions . ', '
+                        . (integer)$data->clicks . ', '
+                        . (float)round($data->position, 1) . ', \''
+                        . $data->keys[1] . '\') '
+                        . 'ON DUPLICATE KEY UPDATE impressions = '
+                        . (integer)$data->impressions
+                        . ', clicks = '
+                        . (integer)$data->clicks
+                        . ', position = '
+                        . (float)round($data->position, 1)
+                        . ';';
+                }
+
+                # Trace
+                echo '.';
+            } else {
+                # Trace
+                echo PHP_EOL
+                . 'Error with SearchConsole_Query::pages('
+                    . $website['url']
+                    . ','
+                    . $device
+                    . ','
+                    . $time
+                    . ')';
+            }
+
+
+            # Top Query
+            if (($data = $query->queries(
+                $website, $device, array('from' => $time, 'to' => $time)
+            )) != false) {
+                foreach ($data->getRows() as $data) {
+                    # SQL Statistics Query
+                    $sql[] = 'INSERT INTO `'
+                        . str_replace(
+                            array('{%device%}', '{%website%}'),
+                            array($device, $website['table']),
+                            $configuration['database']['table']['queries']
+                        )
+                        . '` (`query`,`impressions`,`clicks`,`position`,`date`) '
+                        . ' VALUES (\''
+                        . $database->_handle()->real_escape_string(
+                            $data->keys[0]
+                        )
+                        . '\', '
+                        . (integer)$data->impressions . ', '
+                        . (integer)$data->clicks . ', \''
+                        . (float)round($data->position, 1) . '\', \''
+                        . $data->keys[1] . '\') '
+                        . ' ON DUPLICATE KEY UPDATE impressions = '
+                        . (integer)$data->impressions . ', clicks = '
+                        . (integer)$data->clicks . ', position = '
+                        . (float)round($data->position, 1) . ';';
+                }
+
+                # Trace
+                echo '.';
+            } else {
+                # Trace
+                echo PHP_EOL
+                    . 'Error with SearchConsole_Query::queries('
+                    . $website['url']
+                    . ','
+                    . $device
+                    . ','
+                    . $time
+                    . ')';
             }
         }
     }
