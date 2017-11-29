@@ -136,8 +136,6 @@ CREATE VIEW `export_{%website_table%}` AS SELECT
     `everything_{%website_table%}`.`position` AS `position`
 FROM
     `everything_{%website_table%}`
-WHERE
-    1
 ORDER BY
     `everything_{%website_table%}`.`date`
 DESC
